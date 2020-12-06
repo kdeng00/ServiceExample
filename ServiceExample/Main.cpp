@@ -7,20 +7,22 @@
 #include <tchar.h>
 #include <strsafe.h>
 
-#pragma comment(lib, "advapi32.lib")
-#pragma comment(lib, "kernel32.lib")
-
 #include "Models.h"
 #include "ServiceEntryPoint.hpp"
+
+#pragma comment(lib, "advapi32.lib")
+#pragma comment(lib, "kernel32.lib")
 
 
 template<typename Handle = SC_HANDLE, typename Char = wchar_t>
 VOID ServiceInstall(void);
-template<typename TSTR = LPTSTR, typename CTSTR = LPCTSTR,
+
+template<typename TStr = LPTSTR, typename CTStr = LPCTSTR,
     typename Handle = HANDLE, typename Char = TCHAR>
 VOID ServiceReportEvent(LPTSTR);
 
-std::shared_ptr<models::ServiceInfo<>> service_info(new models::ServiceInfo<>(L"Service Example"));
+std::shared_ptr<models::ServiceInfo<>> 
+service_info(new models::ServiceInfo<>(L"Service Example"));
 
 
 #undef main
