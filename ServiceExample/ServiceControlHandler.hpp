@@ -14,20 +14,20 @@ namespace service
 	class ServiceControlHandler
 	{
 	public:
-		template<typename D = DWORD>
+		template<typename D = DWORD,
+				 typename Obj = models::ServiceInfo<>,
+				 typename Ptr = std::shared_ptr<Obj>>
 		static VOID WINAPI ServiceCtrlHandler(D ctrlCode)
 		{
-			extern std::shared_ptr<models::ServiceInfo<>> service_info;
+			extern Ptr service_info;
 
 			switch (ctrlCode)
 			{
 			case SERVICE_CONTROL_STOP:
-				// ReportServiceStatus(SERVICE_STOP_PENDING, NO_ERROR, 0);
-				ReportServiceStatus(SERVICE_STOP_PENDING, NO_ERROR, 0);
+				ReportServiceStatus<D>(SERVICE_STOP_PENDING, NO_ERROR, 0);
 
 				SetEvent(service_info->service_stop_event);
-				// ReportServiceStatus(g_ServiceStatus.dwCurrentState, NO_ERROR, 0);
-				ReportServiceStatus(service_info->service_status.dwCurrentState, NO_ERROR, 0);
+				ReportServiceStatus<D>(service_info->service_status.dwCurrentState, NO_ERROR, 0);
 
 				return;
 			case SERVICE_CONTROL_INTERROGATE:
@@ -36,21 +36,18 @@ namespace service
 				break;
 			}
 		}
-		// static SERVICE_STATUS g_ServiceStatus = {0};
-		// static SERVICE_STATUS_HANDLE g_StatusHandle = nullptr;
-		// static SERVICE_STATUS g_ServiceStatus;
-		// static SERVICE_STATUS_HANDLE g_StatusHandle = nullptr;
-		// static SERVICE_STATUS_HANDLE g_StatusHandle;
 
 
-
-		static VOID ReportServiceStatus(DWORD dwCurrentState,
-			DWORD dwWin32ExitCode,
-			DWORD dwWaitHint)
+		template<typename D = DWORD,
+				 typename Obj = models::ServiceInfo<>,
+				 typename Ptr = std::shared_ptr<Obj>>
+		static VOID ReportServiceStatus(D dwCurrentState,
+			D dwWin32ExitCode,
+			D dwWaitHint)
 		{
-			extern std::shared_ptr<models::ServiceInfo<>> service_info;
+			extern Ptr service_info;
 
-			static DWORD dwCheckPoint = 1;
+			static D dwCheckPoint = 1;
 
 			service_info->service_status.dwCurrentState = dwCurrentState;
 			service_info->service_status.dwWin32ExitCode = dwWin32ExitCode;
@@ -75,7 +72,6 @@ namespace service
 				service_info->service_status.dwCheckPoint = dwCheckPoint++;
 			}
 
-			// SetServiceStatus(g_StatusHandle, &service_info->service_status);
 			SetServiceStatus(service_info->service_handle, &service_info->service_status);
 		}
 
